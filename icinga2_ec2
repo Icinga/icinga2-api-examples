@@ -1,25 +1,213 @@
 #!/usr/bin/env ruby
 
 require 'aws-sdk'
+require 'rest_client'
 
 class AwsInstanceManager
-  def list_instances()
+  def print_instance(inst)
+    #puts inst
+    iid = inst[:instance_id]
+    istate = inst[:state].name
+    ipublicdns = inst[:public_dns_name]
+    ipublicip = inst[:public_ip_address]
+    puts "AWS EC2 instance ID: '#{iid}' State: '#{istate}' Public DNS: '#{ipublicdns}' Public IP: '#{ipublicip}'"
+  end
+
+  def manage_instances()
     ec2 = Aws::EC2::Client.new(region: 'us-west-2');
+
+    # manage i2
+    i2 = Icinga2InstanceManager.new
+
+    if !i2.check_running()
+      puts "Icinga 2 API is not available. Please start Icinga 2 with enabled 'api' feature and appropriate api user credentials."
+      exit 1
+    end
+
     resp = ec2.describe_instances()
     resp.reservations.each do |res|
       res.instances.each do |inst|
-        puts inst
-        iid = inst[:instance_id]
-        istate = inst[:state].name
-        ipublicdns = inst[:public_dns_name]
-        ipublicip = inst[:public_ip_address]
-        puts "#{iid} #{istate} #{ipublicdns} #{ipublicip}"
+#        puts inst
+        i_id = inst[:instance_id]
+        i_state = inst[:state].name
+        i_public_dns = inst[:public_dns_name]
+        i_public_ip = inst[:public_ip_address]
+
+        print_instance(inst)
+
+        # if instance is not running, mark it for deletion
+        i_to_delete = false
+        if i_state != "running"
+          i_to_delete = true
+        end
+
+
+        if i_to_delete
+            i2.delete_host(i_id)
+        else
+          # check if the host exist
+          i2_res = i2.get_host(i_id)
+
+          i_to_update = false
+          if i2_res && i2_res.code == 200
+            #puts i2_res.body
+            i_to_update = true
+          elsif i2_res
+            #puts i2_res.code
+            i_to_update = true
+          else
+            # object does not exist
+            tags = { "os" => "Linux", "distribution" => "AWS"}
+            i2.create_host(i_id, i_public_ip, i_public_dns, tags)
+          end
+
+          # object exists, do an update of its attributes
+          if i_to_update
+            puts "Found host, doing update only"
+            tags = { "os" => "Linux", "distribution" => "AWS"}
+            i2.update_host(i_id, i_public_ip, i_public_dns, tags)
+          end
+        end
+
       end
     end
   end
 end
 
+class Icinga2InstanceManager
+  # prepare the rest client ssl stuff
+  def prepare_rest_client(api_url)
+    cert_file = File.read("/usr/local/icinga2/etc/icinga2/pki/mbmif.int.netways.de.crt")
+    key_file = File.read("/usr/local/icinga2/etc/icinga2/pki/mbmif.int.netways.de.key")
+    ca_file = File.read("/usr/local/icinga2/etc/icinga2/pki/ca.crt")
+
+    cert = OpenSSL::X509::Certificate.new(cert_file)
+    key = OpenSSL::PKey::RSA.new(key_file)
+
+    options = {:ssl_client_cert => cert, :ssl_client_key => key, :ssl_ca_file => ca_file, :verify_ssl => OpenSSL::SSL::VERIFY_NONE}
+
+    res = RestClient::Resource.new(
+      URI.encode(api_url),
+      options)
+    return res
+  end
+
+  # fetch global status to see if api is available
+  def check_running()
+    api_url = "https://localhost:5665/v1/status/IcingaApplication"
+    rest_client = prepare_rest_client(api_url)
+    headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
+
+    puts "Checking the availability of the Icinga 2 API at #{api_url}."
+
+    begin
+      response = rest_client.get(headers)
+    rescue => e
+      return false
+    end
+
+    puts "Status: " + (JSON.pretty_generate JSON.parse(response.body))
+    return true
+  end
+
+  # list, GET
+  def get_host(name)
+    api_url = "https://localhost:5665/v1/hosts/#{name}"
+    rest_client = prepare_rest_client(api_url)
+    headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
+
+    puts "Getting Icinga 2 host '#{name}'."
+
+    begin
+      response = rest_client.get(headers)
+    rescue => e
+      e.response
+    end
+    #puts response
+    return response
+  end
+
+  # create, PUT
+  def create_host(name, address, display_name, tags)
+    api_url = "https://localhost:5665/v1/hosts/#{name}"
+    rest_client = prepare_rest_client(api_url)
+    headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
+    # hardcode the required check_command attribute
+    attrs = {
+              'attrs' =>
+                {
+                  'check_command' => 'hostalive',
+                  'address' => "#{address}",
+                  'display_name' => "#{display_name}",
+                  'vars' => tags
+                }
+            }
+
+    puts "Creating Icinga 2 host '#{name}' with attributes: '" + attrs.to_json + "'."
+
+    begin
+      response = rest_client.put(attrs.to_json)
+    rescue => e
+      e.response
+    end
+    return response
+  end
+
+  # update, POST
+  def update_host(name, address, display_name, tags)
+    api_url = "https://localhost:5665/v1/hosts/#{name}"
+    rest_client = prepare_rest_client(api_url)
+    headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
+    attrs = {
+              'attrs' =>
+                {
+                  'check_command' => 'hostalive',
+                  'address' => "#{address}",
+                  'display_name' => "#{display_name}",
+                  'vars' => tags
+                }
+            }
+
+    puts "Updating Icinga 2 host '#{name}' with attributes: '" + attrs.to_json + "'."
+
+    begin
+      response = rest_client.post(attrs.to_json)
+    rescue => e
+      e.response
+    end
+    return response
+
+  end
+
+  # delete, DELETE
+  def delete_host(name)
+    api_url = "https://localhost:5665/v1/hosts/#{name}?cascade=1" #applied services require cascading delete
+    rest_client = prepare_rest_client(api_url)
+    headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
+
+    puts "Deleting Icinga 2 host '#{name}'."
+
+    begin
+      response = rest_client.delete(headers)
+    rescue => e
+      e.response
+      # silently ignore errors with non-existing objects
+      #puts "Errors deleting host '#{name}'."
+    end
+
+    # we use cascading delete, but anyways
+    if response && response.code != 200
+      puts response.body
+    end
+
+    return response
+
+  end
+end
+
+
+
 if __FILE__ ==$0
   aws = AwsInstanceManager.new
-  aws.list_instances();
+  aws.manage_instances();
 end
