@@ -2,6 +2,7 @@
 
 require 'aws-sdk'
 require 'rest_client'
+require 'colorize'
 
 class AwsInstanceManager
   def print_instance(inst)
@@ -10,7 +11,12 @@ class AwsInstanceManager
     istate = inst[:state].name
     ipublicdns = inst[:public_dns_name]
     ipublicip = inst[:public_ip_address]
-    puts "AWS EC2 instance ID: '#{iid}' State: '#{istate}' Public DNS: '#{ipublicdns}' Public IP: '#{ipublicip}'"
+
+    if istate != "running"
+      puts "AWS EC2 instance ID: '#{iid}' State: '#{istate}'".red
+    else
+      puts "AWS EC2 instance ID: '#{iid}' State: '#{istate}' Public DNS: '#{ipublicdns}' Public IP: '#{ipublicip}'".green
+    end
   end
 
   def manage_instances()
@@ -20,7 +26,7 @@ class AwsInstanceManager
     i2 = Icinga2InstanceManager.new
 
     if !i2.check_running()
-      puts "Icinga 2 API is not available. Please start Icinga 2 with enabled 'api' feature and appropriate api user credentials."
+      puts "Icinga 2 API is not available. Please start Icinga 2 with enabled 'api' feature and appropriate api user credentials.".red
       exit 1
     end
 
@@ -63,7 +69,7 @@ class AwsInstanceManager
 
           # object exists, do an update of its attributes
           if i_to_update
-            puts "Found host, doing update only"
+            puts "Found host, doing update only".yellow
             tags = { "os" => "Linux", "distribution" => "AWS"}
             i2.update_host(i_id, i_public_ip, i_public_dns, tags)
           end
@@ -75,11 +81,21 @@ class AwsInstanceManager
 end
 
 class Icinga2InstanceManager
+  @@node_name = "mbmif.int.netways.de"
+  def set_node_name(name)
+    @@node_name = name
+  end
+
+  @@api_url_base = "https://localhost:5665/v1"
+  def set_api_url_base(url)
+    @@api_url_base = url
+  end
+
   # prepare the rest client ssl stuff
   def prepare_rest_client(api_url)
-    cert_file = File.read("/usr/local/icinga2/etc/icinga2/pki/mbmif.int.netways.de.crt")
-    key_file = File.read("/usr/local/icinga2/etc/icinga2/pki/mbmif.int.netways.de.key")
-    ca_file = File.read("/usr/local/icinga2/etc/icinga2/pki/ca.crt")
+    cert_file = File.read("pki/" + @@node_name + ".crt")
+    key_file = File.read("pki/" + @@node_name + ".key")
+    ca_file = File.read("pki/ca.crt")
 
     cert = OpenSSL::X509::Certificate.new(cert_file)
     key = OpenSSL::PKey::RSA.new(key_file)
@@ -94,7 +110,7 @@ class Icinga2InstanceManager
 
   # fetch global status to see if api is available
   def check_running()
-    api_url = "https://localhost:5665/v1/status/IcingaApplication"
+    api_url = @@api_url_base + "/status/IcingaApplication"
     rest_client = prepare_rest_client(api_url)
     headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
 
@@ -112,11 +128,11 @@ class Icinga2InstanceManager
 
   # list, GET
   def get_host(name)
-    api_url = "https://localhost:5665/v1/hosts/#{name}"
+    api_url = @@api_url_base + "/hosts/#{name}"
     rest_client = prepare_rest_client(api_url)
     headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
 
-    puts "Getting Icinga 2 host '#{name}'."
+    puts "Icinga 2: Getting host '#{name}'."
 
     begin
       response = rest_client.get(headers)
@@ -129,7 +145,7 @@ class Icinga2InstanceManager
 
   # create, PUT
   def create_host(name, address, display_name, tags)
-    api_url = "https://localhost:5665/v1/hosts/#{name}"
+    api_url = @@api_url_base + "/v1/hosts/#{name}"
     rest_client = prepare_rest_client(api_url)
     headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
     # hardcode the required check_command attribute
@@ -143,7 +159,7 @@ class Icinga2InstanceManager
                 }
             }
 
-    puts "Creating Icinga 2 host '#{name}' with attributes: '" + attrs.to_json + "'."
+    puts "Icinga 2: Creating host '#{name}' with attributes: '" + attrs.to_json + "'."
 
     begin
       response = rest_client.put(attrs.to_json)
@@ -155,7 +171,7 @@ class Icinga2InstanceManager
 
   # update, POST
   def update_host(name, address, display_name, tags)
-    api_url = "https://localhost:5665/v1/hosts/#{name}"
+    api_url = @@api_url_base + "/v1/hosts/#{name}"
     rest_client = prepare_rest_client(api_url)
     headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
     attrs = {
@@ -168,7 +184,7 @@ class Icinga2InstanceManager
                 }
             }
 
-    puts "Updating Icinga 2 host '#{name}' with attributes: '" + attrs.to_json + "'."
+    puts "Icinga 2: Updating host '#{name}' with attributes: '" + attrs.to_json + "'."
 
     begin
       response = rest_client.post(attrs.to_json)
@@ -181,11 +197,11 @@ class Icinga2InstanceManager
 
   # delete, DELETE
   def delete_host(name)
-    api_url = "https://localhost:5665/v1/hosts/#{name}?cascade=1" #applied services require cascading delete
+    api_url = @@api_url_base + "/hosts/#{name}?cascade=1" #applied services require cascading delete
     rest_client = prepare_rest_client(api_url)
     headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
 
-    puts "Deleting Icinga 2 host '#{name}'."
+    puts "Icinga 2: Deleting host '#{name}'."
 
     begin
       response = rest_client.delete(headers)
