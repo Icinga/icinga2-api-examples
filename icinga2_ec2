@@ -91,6 +91,8 @@ class Icinga2InstanceManager
     @@api_url_base = url
   end
 
+  @@api_url_obj_hosts = "/objects/hosts"
+
   # prepare the rest client ssl stuff
   def prepare_rest_client(api_url)
     cert_file = File.read("pki/" + @@node_name + ".crt")
@@ -128,7 +130,7 @@ class Icinga2InstanceManager
 
   # list, GET
   def get_host(name)
-    api_url = @@api_url_base + "/hosts/#{name}"
+    api_url = @@api_url_base + @@api_url_obj_hosts + "/#{name}"
     rest_client = prepare_rest_client(api_url)
     headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
 
@@ -145,7 +147,7 @@ class Icinga2InstanceManager
 
   # create, PUT
   def create_host(name, address, display_name, tags)
-    api_url = @@api_url_base + "/v1/hosts/#{name}"
+    api_url = @@api_url_base + @@api_url_obj_hosts + "/#{name}"
     rest_client = prepare_rest_client(api_url)
     headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
     # hardcode the required check_command attribute
@@ -171,7 +173,7 @@ class Icinga2InstanceManager
 
   # update, POST
   def update_host(name, address, display_name, tags)
-    api_url = @@api_url_base + "/v1/hosts/#{name}"
+    api_url = @@api_url_base + @@api_url_obj_hosts + "/#{name}"
     rest_client = prepare_rest_client(api_url)
     headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
     attrs = {
@@ -197,7 +199,7 @@ class Icinga2InstanceManager
 
   # delete, DELETE
   def delete_host(name)
-    api_url = @@api_url_base + "/hosts/#{name}?cascade=1" #applied services require cascading delete
+    api_url = @@api_url_base + @@api_url_obj_hosts + "/#{name}?cascade=1" #applied services require cascading delete
     rest_client = prepare_rest_client(api_url)
     headers = {"Content-Type" => "application/json", "Accept" => "application/json"}
 
