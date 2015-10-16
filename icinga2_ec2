@@ -1,5 +1,24 @@
 #!/usr/bin/env ruby
 
+#/******************************************************************************
+# * Icinga 2 AWS                                                               *
+# * Copyright (C) 2015 Icinga Development Team (https://www.icinga.org)        *
+# *                                                                            *
+# * This program is free software; you can redistribute it and/or              *
+# * modify it under the terms of the GNU General Public License                *
+# * as published by the Free Software Foundation; either version 2             *
+# * of the License, or (at your option) any later version.                     *
+# *                                                                            *
+# * This program is distributed in the hope that it will be useful,            *
+# * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
+# * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
+# * GNU General Public License for more details.                               *
+# *                                                                            *
+# * You should have received a copy of the GNU General Public License          *
+# * along with this program; if not, write to the Free Software Foundation     *
+# * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.             *
+# ******************************************************************************/
+
 require 'aws-sdk'
 require 'rest_client'
 require 'colorize'
@@ -19,11 +38,8 @@ class AwsInstanceManager
     end
   end
 
-  def manage_instances()
+  def manage_instances(i2)
     ec2 = Aws::EC2::Client.new(region: 'us-west-2');
-
-    # manage i2
-    i2 = Icinga2InstanceManager.new
 
     if !i2.check_running()
       puts "Icinga 2 API is not available. Please start Icinga 2 with enabled 'api' feature and appropriate api user credentials.".red
@@ -42,48 +58,53 @@ class AwsInstanceManager
         print_instance(inst)
 
         # if instance is not running, mark it for deletion
+        # TODO: allow user to define the action
         i_to_delete = false
         if i_state != "running"
           i_to_delete = true
         end
 
+        # check if the host exists
+        i2_res = i2.get_host(i_id)
 
-        if i_to_delete
-            i2.delete_host(i_id)
-        else
-          # check if the host exist
-          i2_res = i2.get_host(i_id)
-
-          i_to_update = false
-          if i2_res && i2_res.code == 200
-            #puts i2_res.body
-            i_to_update = true
-          elsif i2_res
-            #puts i2_res.code
-            i_to_update = true
-          else
-            # object does not exist
-            tags = { "os" => "Linux", "distribution" => "AWS"}
-            i2.create_host(i_id, i_public_ip, i_public_dns, tags)
-          end
-
-          # object exists, do an update of its attributes
-          if i_to_update
-            puts "Found host, doing update only".yellow
-            tags = { "os" => "Linux", "distribution" => "AWS"}
-            i2.update_host(i_id, i_public_ip, i_public_dns, tags)
-          end
+        i_exists = false
+        if i2_res && i2_res.code == 200
+          #puts i2_res.body
+          i_exist = true
         end
 
+        if i_exists == false and i_to_delete == true
+          # object was marked for deletion
+          i2.delete_host(i_id)
+        elsif i_exists == false and i_to_delete == false
+          # object does not exist
+          # TODO: add/fetch more tags as custom attributes
+          tags = { "os" => "Linux", "distribution" => "AWS"}
+          i2.create_host(i_id, i_public_ip, i_public_dns, tags)
+        elsif i_exists == true and i_to_delete == false
+          puts "Found host, doing update only".yellow
+          # TODO: add/fetch more tags as custom attributes
+          tags = { "os" => "Linux", "distribution" => "AWS"}
+          i2.update_host(i_id, i_public_ip, i_public_dns, tags)
+        end
       end
     end
   end
 end
 
 class Icinga2InstanceManager
-  @@node_name = "mbmif.int.netways.de"
+  @@node_name = Socket.gethostbyname(Socket.gethostname).first 
   def set_node_name(name)
     @@node_name = name
+  end
+
+  @@api_username = "aws"
+  def set_api_username(str)
+    @@api_username = str
+  end
+  @@api_password= "icinga"
+  def set_api_password(str)
+    @@api_password = str
   end
 
   @@api_url_base = "https://localhost:5665/v1"
@@ -95,18 +116,25 @@ class Icinga2InstanceManager
 
   # prepare the rest client ssl stuff
   def prepare_rest_client(api_url)
-    cert_file = File.read("pki/" + @@node_name + ".crt")
-    key_file = File.read("pki/" + @@node_name + ".key")
-    ca_file = File.read("pki/ca.crt")
 
-    cert = OpenSSL::X509::Certificate.new(cert_file)
-    key = OpenSSL::PKey::RSA.new(key_file)
+    # check whether pki files are there, otherwise use basic auth
+    if File.file?("pki/" + @@node_name + ".crt")
+      puts "PKI found, using client certificates for connection to Icinga 2 API"
+      cert_file = File.read("pki/" + @@node_name + ".crt")
+      key_file = File.read("pki/" + @@node_name + ".key")
+      ca_file = File.read("pki/ca.crt")
 
-    options = {:ssl_client_cert => cert, :ssl_client_key => key, :ssl_ca_file => ca_file, :verify_ssl => OpenSSL::SSL::VERIFY_NONE}
+      cert = OpenSSL::X509::Certificate.new(cert_file)
+      key = OpenSSL::PKey::RSA.new(key_file)
 
-    res = RestClient::Resource.new(
-      URI.encode(api_url),
-      options)
+      options = {:ssl_client_cert => cert, :ssl_client_key => key, :ssl_ca_file => ca_file, :verify_ssl => OpenSSL::SSL::VERIFY_NONE}
+    else
+      puts "PKI not found, using basic auth for connection to Icinga 2 API"
+
+      options = { :user => @@api_username, :password => @@api_password, :verify_ssl => OpenSSL::SSL::VERIFY_NONE }
+    end
+
+    res = RestClient::Resource.new(URI.encode(api_url), options)
     return res
   end
 
@@ -227,5 +255,11 @@ end
 
 if __FILE__ ==$0
   aws = AwsInstanceManager.new
-  aws.manage_instances();
+  i2 = Icinga2InstanceManager.new
+
+  #i2.set_node_name("icinga2a")
+  i2.set_api_username("aws")
+  i2.set_api_password("icinga")
+
+  aws.manage_instances(i2)
 end
