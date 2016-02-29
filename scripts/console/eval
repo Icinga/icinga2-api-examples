@@ -1,0 +1,4 @@
+#!/bin/bash
+
+ICINGA2_API_PASSWORD=icinga icinga2 console --connect 'https://root@localhost:5665/' --eval 'get_host(NodeName).last_check_result.command' | python -m json.tool
+
