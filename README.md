@@ -10,6 +10,8 @@ into the scripting details.
 
 * [Dashing](https://github.com/icinga/dashing-icinga2) (separate standalone project)
 * [AWS/EC2](aws-ec2/)
+* [Clippy.js](clippy.js/)
+* [Scripts](scripts/)
 
 
 # Support
