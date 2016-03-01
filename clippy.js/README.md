@@ -29,3 +29,9 @@ Put everything somewhere on your webserver's root directory
 and call it from your browser.
 
 A short demo is available on [Youtube](https://www.youtube.com/watch?v=e3enywTuAX8).
+
+# Git
+
+On toplevel working dir, clippy.js is added as subtree:
+
+    git subtree add --prefix clippy.js/js/clippy.js https://github.com/smore-inc/clippy.js.git master --squash
