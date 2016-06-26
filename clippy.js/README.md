@@ -6,7 +6,8 @@ Clippy and friends), ready to be embedded in any website.
 
 `query.php` is a simple wrapper for the Icinga 2 API.
 I had to come up with that proxy in the middle to
-workaround CORS issues hindering direct javascript calls.
+workaround [CORS issues](https://dev.icinga.org/issues/12042)
+hindering direct javascript calls.
 
 `index.php` contains the jQuery ajax requests to poll
 the API status in a loop and then selectively let clippy
