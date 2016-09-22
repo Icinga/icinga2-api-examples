@@ -23,13 +23,16 @@ If any tool or script is missing, please send a patch/PR :)
 
 ## Status
 
-* [Dashing](https://github.com/icinga/dashing-icinga2) (separate standalone project)
+* [Dashing](https://github.com/icinga/dashing-icinga2) (separate standalone project, integrated into the Vagrant boxes)
 * [Clippy.js](clippy.js/)
 * [BitBar for OSX](https://getbitbar.com/plugins/Dev/Icinga2/icinga2.24m.py)
+* [Icinga 2 Multistatus](https://chrome.google.com/webstore/detail/icinga-multi-status/khabbhcojgkibdeipanmiphceeoiijal/related)
 
 ## Manage Objects
 
+* [Icinga Director](https://www.icinga.org/products/icinga-web-2-modules/)
 * [AWS/EC2](aws-ec2/)
+* [Foreman Smart Proxy Monitoring](https://github.com/theforeman/smart_proxy_monitoring)
 
 ## Event Streams
 
@@ -38,7 +41,7 @@ If any tool or script is missing, please send a patch/PR :)
 
 ## Actions
 
-* [mqttwarn](https://github.com/jpmens/mqttwarn#icinga2)
+* [mqttwarn](https://github.com/jpmens/mqttwarn#icinga2), [Monitoring OpenHAB](https://community.openhab.org/t/monitoring-openhab-using-icinga2/13461)
 * [Lita handler](https://github.com/tuxmea/lita-icinga2)
 * [Sakuli forwarder](http://sakuli.readthedocs.io/en/dev/forwarder-icinga2api/)
 * [OpsGenie actions](https://www.opsgenie.com/docs/integrations/icinga2-integration)
