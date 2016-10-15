@@ -20,6 +20,7 @@ If any tool or script is missing, please send a patch/PR :)
 ## Libraries
 
 * [python-icinga2-api](https://pypi.python.org/pypi/python-icinga2api)
+* [go-icinga2](https://github.com/xert/go-icinga2)
 
 ## Status
 
@@ -33,6 +34,7 @@ If any tool or script is missing, please send a patch/PR :)
 * [Icinga Director](https://www.icinga.org/products/icinga-web-2-modules/)
 * [AWS/EC2](aws-ec2/)
 * [Foreman Smart Proxy Monitoring](https://github.com/theforeman/smart_proxy_monitoring)
+* [Terraform Provider](https://github.com/lrsmith/terraform-provider-icinga2)
 
 ## Event Streams
 
