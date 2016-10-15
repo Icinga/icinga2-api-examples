@@ -102,6 +102,33 @@ var CheckResultCountObject map[string]int64
 var StateChangesObject map[string][]int64
 
 /*****************************************************************************/
+func displayStates(values []int64, is_host bool) string {
+	var str = ""
+	for i:= 0; i < len(values); i++ {
+		//ugly, but I'm lazy
+		if is_host == true {
+			if values[i] < 2 {
+				str += "\x1b[32;1mUP\x1b[0m"
+			} else if values[i] >= 2 {
+				str += "\x1b[31;1mDown\x1b[0m"
+			}
+		} else {
+			if values[i] == 0 {
+				str += "\x1b[32;1mOK\x1b[0m"
+			} else if values[i] == 1 {
+				str += "\x1b[33;1mWarning\x1b[0m"
+			} else if values[i] == 2 {
+				str += "\x1b[31;1mCritical\x1b[0m"
+			} else if values[i] == 3 {
+				str += "\x1b[35;1mUnknown\x1b[0m"
+			}
+		}
+
+		str += " "
+	}
+
+	return str
+}
 
 func initHTTPClient() *http.Client {
 	sslSkipVerify := true //TODO: config option
@@ -142,28 +169,77 @@ func handleEventTypes(response string) {
 		CheckResultCount++
 
 		var ObjectName = CheckResult.Host
+		var IsHost = true
 		if CheckResult.Service != "" {
 			ObjectName = ObjectName + "!" + CheckResult.Service
+			IsHost = false
 		}
 
 		CheckResultCountObject[ObjectName] = CheckResultCountObject[ObjectName] + 1
 
-		//TODO keep array size static
-		state, _ := json.Number.Int64(CheckResult.CheckResult.State)
+		state, err := json.Number.Float64(CheckResult.CheckResult.State)
+		if err != nil {
+			fmt.Println("Cannot fetch state", CheckResult.CheckResult.State)
+		}
 
-		StateChangesObject[ObjectName] = append(StateChangesObject[ObjectName], state)
+		StateChangesObject[ObjectName] = append(StateChangesObject[ObjectName], int64(state))
 
-		//periodic statistics
-		if time.Now().Unix() % 2 == 0 {
-			var CheckResultRate = float64(CheckResultCount) / float64(time.Now().Unix() - StartTime)
-			fmt.Println("Global check result rate/second:", CheckResultRate)
+		var StateCount = len(StateChangesObject[ObjectName])
 
-			var CheckResultObjectRate = float64(CheckResultCountObject[ObjectName]) / float64(time.Now().Unix() - StartTime)
-			fmt.Printf("Check result rate for object '%s': %.02f\n", ObjectName, CheckResultObjectRate)
+		if StateCount > 10 {
+			StateChangesObject[ObjectName] = StateChangesObject[ObjectName][StateCount-10:]
+			StateCount = 10
+		}
 
-			fmt.Println(" ")
+		fmt.Printf("Summary for object \x1b[1;1m%s\x1b[0m\n", ObjectName)
+		fmt.Println("-----------------------------------")
+		fmt.Printf(" State History: %s\n", displayStates(StateChangesObject[ObjectName][:], IsHost))
+		fmt.Printf(" Output: '%s'\n", CheckResult.CheckResult.Output)
+
+		if detectFlapping(StateChangesObject[ObjectName][:]) == true {
+			fmt.Printf(" \x1b[31;1m===> ATTENTION: Object '%s' is flapping between states\x1b[0m: %s\n", ObjectName, displayStates(StateChangesObject[ObjectName][:], IsHost))
+		}
+
+		fmt.Println(" ")
+		var CheckResultRate = float64(CheckResultCount) / float64(time.Now().Unix() - StartTime)
+		fmt.Printf(" Global check result rate/second: %.02f\n", CheckResultRate)
+
+		var CheckResultObjectRate = float64(CheckResultCountObject[ObjectName]) / float64(time.Now().Unix() - StartTime)
+		fmt.Printf(" Check result rate for object '%s': %.02f\n", ObjectName, CheckResultObjectRate)
+		fmt.Println(" ")
+	}
+}
+
+func detectFlapping(values []int64) bool {
+	var oldState int64 = 0
+	var newState int64 = 0
+	var flappingCount float64 = 0.0
+
+	//require a minimum
+	if len(values) < 5 {
+		return false
+	}
+
+	for i:= 0; i < len(values); i++ {
+		if i == 0 {
+			newState = values[i]
+		} else {
+			oldState = values[i-1]
+			newState = values[i]
+		}
+
+		//fmt.Printf("Old state: %b New state: %b", oldState, newState)
+
+		if oldState != newState {
+			flappingCount++
 		}
 	}
+
+	if flappingCount > float64(len(values) / 3) {
+		return true
+	}
+
+	return false
 }
 
 
@@ -214,7 +290,7 @@ func eventLoop() {
 }
 
 func cleanup() {
-	fmt.Println("Exit cleanup.")
+	fmt.Println("Bye and thanks for using this Icinga 2 API example in Golang.")
 }
 
 /*****************************************************************************/
