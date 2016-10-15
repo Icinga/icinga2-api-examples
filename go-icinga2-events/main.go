@@ -137,9 +137,7 @@ func handleEventTypes(response string) {
 	}
 
 	if CheckResult.Type == "CheckResult" {
-		fmt.Println("Processing type 'CheckResult'")
-
-		fmt.Println()
+		//fmt.Println("Processing type 'CheckResult'")
 
 		CheckResultCount++
 
@@ -156,12 +154,14 @@ func handleEventTypes(response string) {
 		StateChangesObject[ObjectName] = append(StateChangesObject[ObjectName], state)
 
 		//periodic statistics
-		if time.Now().Unix() % 5 == 0 {
-			var CheckResultRate = CheckResultCount / (time.Now().Unix() - StartTime)
-			fmt.Println("Global check result rate:", CheckResultRate)
+		if time.Now().Unix() % 2 == 0 {
+			var CheckResultRate = float64(CheckResultCount) / float64(time.Now().Unix() - StartTime)
+			fmt.Println("Global check result rate/second:", CheckResultRate)
 
-			var CheckResultObjectRate = CheckResultCountObject[ObjectName] / (time.Now().Unix() - StartTime)
-			fmt.Printf("Check result rate for object %s: %f", ObjectName, CheckResultObjectRate)
+			var CheckResultObjectRate = float64(CheckResultCountObject[ObjectName]) / float64(time.Now().Unix() - StartTime)
+			fmt.Printf("Check result rate for object '%s': %.02f\n", ObjectName, CheckResultObjectRate)
+
+			fmt.Println(" ")
 		}
 	}
 }
@@ -203,8 +203,8 @@ func eventLoop() {
 			fmt.Println("Error reading stream", err)
 			return
 		}
-		fmt.Println("Processing message")
-		fmt.Println(string(line))
+		//fmt.Println("Processing message")
+		//fmt.Println(string(line))
 
 		//call handler for json decoding and message processing
 		handleEventTypes(string(line))
