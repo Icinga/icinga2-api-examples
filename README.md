@@ -52,7 +52,7 @@ If any tool or script is missing, please send a patch/PR :)
 ## REST API Clients
 
 * Browser plugins
-* [Paw for OSX](https://luckymarmot.com)
+* [Paw for MacOS](https://paw.cloud), examples [here](paw/)
 * [Icinga Studio](http://docs.icinga.org/icinga2/latest/doc/module/icinga2/toc#!/icinga2/latest/doc/module/icinga2/chapter/icinga2-api#icinga2-api-clients-icinga-studio)
 * [icinga2 console](http://docs.icinga.org/icinga2/latest/doc/module/icinga2/toc#!/icinga2/latest/doc/module/icinga2/chapter/icinga2-api#icinga2-api-clients-cli-console)
 
