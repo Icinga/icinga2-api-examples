@@ -38,6 +38,7 @@ If any tool or script is missing, please send a patch/PR :)
 
 ## Event Streams
 
+* [Request Tracker ticket integration](https://github.com/bytemine/icinga2rt)
 * [Logstash input event stream](https://github.com/bobapple/logstash-input-icinga_eventstream)
 * [Flapjack events](https://github.com/sol1/flapjack-icinga2)
 
