@@ -67,7 +67,7 @@ Name												| Language	| Description
 
 Name												| Language	| Description
 ------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------
-Browser plugins											| -		|
+Browser plugins											| -		| [Postman for Chrome](https://www.getpostman.com), [REST Easy for Firefox](https://addons.mozilla.org/en-US/firefox/addon/rest-easy/?src=userprofile)
 [Paw for MacOS](https://paw.cloud)								| (exported)	| Examples [here](paw/)
 [Icinga Studio](http://docs.icinga.org/icinga2/latest/doc/module/icinga2/toc#!/icinga2/latest/doc/module/icinga2/chapter/icinga2-api#icinga2-api-clients-icinga-studio)	| C++	| Application for visualizing the status information
 [icinga2 console](http://docs.icinga.org/icinga2/latest/doc/module/icinga2/toc#!/icinga2/latest/doc/module/icinga2/chapter/icinga2-api#icinga2-api-clients-cli-console)	| C++	| CLI tool for running config expressions against the API
