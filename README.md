@@ -30,8 +30,8 @@ Name												| Language	| Description
 ------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------
 [Dashing](https://github.com/icinga/dashing-icinga2)						| Ruby, HTML	| Dashboard for Dashing querying the REST API for current host/service/global status
 [IcingaBusyLightAgent](https://github.com/stdevel/IcingaBusylightAgent) 			| C#		| Notification Agent in Systray
-* [BitBar for OSX](https://getbitbar.com/plugins/Dev/Icinga2/icinga2.24m.py)			| Python	| macOS tray app for highlighting the host/service status
-* [Icinga 2 Multistatus](https://chrome.google.com/webstore/detail/icinga-multi-status/khabbhcojgkibdeipanmiphceeoiijal/related)	| - 	| Chrome Extension
+[BitBar for OSX](https://getbitbar.com/plugins/Dev/Icinga2/icinga2.24m.py)			| Python	| macOS tray app for highlighting the host/service status
+[Icinga 2 Multistatus](https://chrome.google.com/webstore/detail/icinga-multi-status/khabbhcojgkibdeipanmiphceeoiijal/related)	| - 	| Chrome Extension
 [Clippy.js](clippy.js/)										| PHP, JS	| Funny demo for presenting alerts in your browser
 
 ## Manage Objects
@@ -48,6 +48,7 @@ Name												| Language	| Description
 Name												| Language	| Description
 ------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------
 [Request Tracker ticket integration](https://github.com/bytemine/icinga2rt)			| Golang	| Create and update RT tickets
+[Elastic icingabeat](https://github.com/icinga/icingabeat)					| Golang	| Process events and send to Elasticsearch/Logstash outputs
 [Logstash input event stream](https://github.com/bobapple/logstash-input-icinga_eventstream)	| Ruby		| Forward events as Logstash input
 [Flapjack events](https://github.com/sol1/flapjack-icinga2)					| Golang	| Dumping events into Redis for Flapjack processing
 [Stackstorm integration](https://github.com/StackStorm-Exchange/stackstorm-icinga2)		| Python	| Processing events and fetching status information
