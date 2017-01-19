@@ -29,6 +29,7 @@ Name												| Language	| Description
 Name												| Language	| Description
 ------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------
 [Dashing](https://github.com/icinga/dashing-icinga2)						| Ruby, HTML	| Dashboard for Dashing querying the REST API for current host/service/global status
+[icinga2bot](https://github.com/reikoNeko/icinga2bot)						| Python	| [Errbot](http://errbot.io/en/latest/user_guide/setup.html) plugin to fetch status and event stream information and forward to XMPP, IRC, etc.
 [IcingaBusyLightAgent](https://github.com/stdevel/IcingaBusylightAgent) 			| C#		| Notification Agent in Systray
 [BitBar for OSX](https://getbitbar.com/plugins/Dev/Icinga2/icinga2.24m.py)			| Python	| macOS tray app for highlighting the host/service status
 [Icinga 2 Multistatus](https://chrome.google.com/webstore/detail/icinga-multi-status/khabbhcojgkibdeipanmiphceeoiijal/related)	| - 	| Chrome Extension
