@@ -23,6 +23,7 @@ Name												| Language	| Description
 ------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------
 [python-icinga2-api](https://pypi.python.org/pypi/python-icinga2api)				| Python	| Python bindings for Icinga 2 interaction
 [go-icinga2](https://github.com/xert/go-icinga2)						| Golang	| Golang functions and type definitions
+[go-icinga2-api](https://github.com/lrsmith/go-icinga2-api/)					| Golang	| Golang implementation used inside the Terraform provider
 
 ## Status
 
@@ -42,7 +43,7 @@ Name												| Language	| Description
 [Icinga Director](https://www.icinga.org/products/icinga-web-2-modules/) 			| PHP, JS	| Icinga 2 configuration interface integrated into Icinga Web 2
 [AWS/EC2](aws-ec2/)										| Ruby		| Example script for creating and deleting AWS instances in Icinga 2
 [Foreman Smart Proxy Monitoring](https://github.com/theforeman/smart_proxy_monitoring)		| Ruby		| Smart Proxy extension for Foreman creating and deleting hosts and services in Icinga 2
-[Terraform Provider](https://github.com/lrsmith/terraform-provider-icinga2)			| Golang	| Register hosts from Terraform in Icinga 2. [Official docs](https://www.terraform.io/docs/providers/icinga2/index.html).
+[Terraform Provider](https://github.com/hashicorp/terraform/pull/8306)				| Golang	| Register hosts from Terraform in Icinga 2. [Official docs](https://www.terraform.io/docs/providers/icinga2/index.html).
 
 ## Event Streams
 
