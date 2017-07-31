@@ -24,6 +24,7 @@ Name												| Language	| Description
 [python-icinga2-api](https://pypi.python.org/pypi/python-icinga2api)				| Python	| Python bindings for Icinga 2 interaction
 [go-icinga2](https://github.com/xert/go-icinga2)						| Golang	| Golang functions and type definitions
 [go-icinga2-api](https://github.com/lrsmith/go-icinga2-api/)					| Golang	| Golang implementation used inside the Terraform provider
+[go-icinga2-client](https://github.com/Nexinto/go-icinga2-client)     | Golang  | Golang implementation for the Rancher integration.
 [Monitoring::Icinga2::Client::REST](https://metacpan.org/release/THESEAL/Monitoring-Icinga2-Client-REST-2.0.0) | Perl | Perl bindings.
 
 ## Status
@@ -46,6 +47,7 @@ Name												| Language	| Description
 [AWS/EC2](aws-ec2/)										| Ruby		| Example script for creating and deleting AWS instances in Icinga 2
 [Foreman Smart Proxy Monitoring](https://github.com/theforeman/smart_proxy_monitoring)		| Ruby		| Smart Proxy extension for Foreman creating and deleting hosts and services in Icinga 2
 [Terraform Provider](https://github.com/hashicorp/terraform/pull/8306)				| Golang	| Register hosts from Terraform in Icinga 2. [Official docs](https://www.terraform.io/docs/providers/icinga2/index.html).
+[Rancher integration](https://github.com/Nexinto/rancher-icinga)              | Golang  | Registers [Rancher](http://rancher.com/rancher/) resources in Icinga 2 for monitoring.
 
 ## Event Streams
 
