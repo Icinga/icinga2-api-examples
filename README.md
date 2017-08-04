@@ -32,6 +32,7 @@ Name												| Language	| Description
 Name												| Language	| Description
 ------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------
 [Dashing](https://github.com/icinga/dashing-icinga2)						| Ruby, HTML	| Dashboard for Dashing querying the REST API for current host/service/global status
+[Icinga 2 Slack Bot](https://github.com/mlabouardy/icinga2-slack-bot) | Golang | Query host/service details from a [Slack](https://slack.com/) channel
 [InfluxDB Telegraf Input](https://github.com/influxdata/telegraf/pull/2668)			| Golang	| [Telegraf](https://github.com/influxdata/telegraf) is an agent written in Go for collecting, processing, aggregating, and writing metrics.
 [icinga2bot](https://github.com/reikoNeko/icinga2bot)						| Python	| [Errbot](http://errbot.io/en/latest/user_guide/setup.html) plugin to fetch status and event stream information and forward to XMPP, IRC, etc.
 [IcingaBusyLightAgent](https://github.com/stdevel/IcingaBusylightAgent) 			| C#		| Notification Agent in Systray
