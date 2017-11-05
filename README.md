@@ -69,6 +69,7 @@ Name												| Language	| Description
 ------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------
 [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)                                   | PHP           | Trigger actions via command transport
 [Logstash output for Icinga](https://www.icinga.com/products/integrations/elastic/)             | Ruby          | Forward check results and create objects from log events
+[OTRS SystemMonitoring](https://github.com/OTRS/SystemMonitoring)                               | Perl          | Acknowledge problems in Icinga 2 from OTRS tickets
 [mqttwarn](https://github.com/jpmens/mqttwarn#icinga2)						| Python	| Forward check results from mqttwarn to Icinga 2
 [Lita handler](https://github.com/tuxmea/lita-icinga2)						| Ruby		| List, recheck and acknowledge through a #chatops bot called [Lita](https://github.com/litaio/lita)
 [Sakuli forwarder](http://sakuli.readthedocs.io/en/dev/forwarder-icinga2api/)			| Java		| Forward check results from tests from [Sakuli](https://github.com/ConSol/sakuli) to Icinga 2
