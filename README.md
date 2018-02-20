@@ -72,7 +72,7 @@ Name												| Language	| Description
 [OTRS SystemMonitoring](https://github.com/OTRS/SystemMonitoring)                               | Perl          | Acknowledge problems in Icinga 2 from OTRS tickets
 [mqttwarn](https://github.com/jpmens/mqttwarn#icinga2)						| Python	| Forward check results from mqttwarn to Icinga 2
 [Lita handler](https://github.com/tuxmea/lita-icinga2)						| Ruby		| List, recheck and acknowledge through a #chatops bot called [Lita](https://github.com/litaio/lita)
-[Sakuli forwarder](http://sakuli.readthedocs.io/en/dev/forwarder-icinga2api/)			| Java		| Forward check results from tests from [Sakuli](https://github.com/ConSol/sakuli) to Icinga 2
+[Sakuli forwarder](http://sakuli.readthedocs.io/en/latest/forwarder-icinga2api/)			| Java		| Forward check results from tests from [Sakuli](https://github.com/ConSol/sakuli) to Icinga 2
 [OpsGenie actions](https://www.opsgenie.com/docs/integrations/icinga2-integration)		| Golang, Java	| Integrate Icinga 2 into OpsGenie
 
 
