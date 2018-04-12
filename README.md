@@ -97,3 +97,16 @@ Name												| Language	| Description
 [console](scripts/console/)									| -		| Examples for using the icinga2 console CLI command
 [events](scripts/events/)									| -		| Examples for event streams
 [objects](scripts/objects/)									| PHP, Python	| Examples for fetching status and managing objects
+
+
+## Filter json output with jq
+
+You can test your filter expression online.
+
+Example: how to get output from service
+
+```sh
+curl -k -u training:icinga 'https://icinga2Server.localdomain:5665/v1/objects/services?filter=match(%22icingaHost1%22,host.name)&attr=last_check_result' |jq '.results[].attrs.last_check_result.output'
+"OK - load average per CPU: 0.00, 0.00, 0.00"
+```
+
