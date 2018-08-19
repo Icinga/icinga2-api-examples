@@ -7,8 +7,6 @@ import argparse
 
 from icinga2api.client import Client
 
-print os.environ
-
 # use a helper to fetch our cut down object names
 def getObjects(client, type_name):
     return client.objects.list(type_name, attrs=['__name'])
