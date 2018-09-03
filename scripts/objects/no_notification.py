@@ -2,6 +2,9 @@
 
 # pip install icinga2api
 # https://github.com/tobiasvdk/icinga2api
+import os
+import argparse
+
 from icinga2api.client import Client
 
 # use a helper to fetch our cut down object names
@@ -17,7 +20,13 @@ def diffList(l1,l2):
     return [x for x in l1 if x not in l2]
 
 # add connection details
-client = Client('https://localhost:5665', 'root', 'icinga')
+parser = argparse.ArgumentParser()
+parser.add_argument("-H", "--hosturi", help="URL to icinga2 API", required=True)
+parser.add_argument("-u", "--username", help="Username to connect to API", required=True)
+parser.add_argument("-p", "--password", help="Password to connect to API", required=True)
+args = parser.parse_args()
+
+client = Client(args.hosturi, args.username, args.password)
 
 hosts = getObjects(client, 'Host')
 services = getObjects(client, 'Service')
