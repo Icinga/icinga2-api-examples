@@ -9,11 +9,17 @@ from icinga2api.client import Client
 
 # use a helper to fetch our cut down object names
 def getObjects(client, type_name):
-    return client.objects.list(type_name, attrs=['__name'])
+    if 'Notification' == type_name:
+        return client.objects.list(type_name, attrs=['__name'])
+    else:
+        return client.objects.list(type_name, attrs=['__name', 'groups'])
 
 # use a helper to convert the full blown object dictionary into a list of __name elements
-def getNameList(objects):
-    return map(lambda x : x['attrs']['__name'], objects)
+def getNameList(objects, group = ''):
+    if group:
+        return map(lambda x : x['attrs']['__name'], filter(lambda y : group in y['attrs']['groups'], objects))
+    else:
+        return map(lambda x : x['attrs']['__name'], objects)
 
 def diffList(l1,l2):
     l2 = set(l2)
@@ -24,6 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-H", "--hosturi", help="URL to icinga2 API", required=True)
 parser.add_argument("-u", "--username", help="Username to connect to API", required=True)
 parser.add_argument("-p", "--password", help="Password to connect to API", required=True)
+parser.add_argument("-g", "--group", help="Group to filter", required=False)
 args = parser.parse_args()
 
 client = Client(args.hosturi, args.username, args.password)
@@ -37,8 +44,13 @@ notifications = getObjects(client, 'Notification')
 #print services
 #print notifications
 
-h_names = getNameList(hosts)
-s_names = getNameList(services)
+if not args.group:
+    h_names = getNameList(hosts, False)
+    s_names = getNameList(services, False)
+else:
+    h_names = getNameList(hosts, args.group)
+    s_names = getNameList(services, args.group)
+
 n_names = getNameList(notifications)
 
 found_h_names = []
