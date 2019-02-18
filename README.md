@@ -23,7 +23,7 @@ Name												| Language	| Description
 ------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------
 [ruby-icinga2](https://github.com/bodsch/ruby-icinga2)                                          | Ruby          | Ruby library
 [python-icinga2_api](https://github.com/KevinHonka/Icinga2_Python_API)                          | Python        | Python library
-[python-icinga2-api](https://pypi.python.org/pypi/python-icinga2api)				| Python	| Python bindings for Icinga 2 interaction
+[python-icinga2-api](https://github.com/fmnisme/python-icinga2api)				| Python	| Python bindings for Icinga 2 interaction
 [go-icinga2](https://github.com/xert/go-icinga2)						| Golang	| Golang functions and type definitions
 [go-icinga2-api](https://github.com/lrsmith/go-icinga2-api/)					| Golang	| Golang implementation used inside the Terraform provider
 [go-icinga2-client](https://github.com/Nexinto/go-icinga2-client)     | Golang  | Golang implementation for the Rancher integration.
