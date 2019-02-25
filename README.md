@@ -47,6 +47,7 @@ Name												| Language	| Description
 Name												| Language	| Description
 ------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------
 [Icinga Director](https://www.icinga.org/products/icinga-web-2-modules/) 			| PHP, JS	| Icinga 2 configuration interface integrated into Icinga Web 2
+[Kube Icinga](https://github.com/gyselroth/kube-icinga)                       | Typescript | Monitor kubernetes services / resources using icinga2 (including autodiscovery support)
 [Logstash output for Icinga](https://www.icinga.com/products/integrations/elastic/)             | Ruby          | Forward check results and create objects from log events
 [AWS/EC2](aws-ec2/)										| Ruby		| Example script for creating and deleting AWS instances in Icinga 2
 [Foreman Smart Proxy Monitoring](https://github.com/theforeman/smart_proxy_monitoring)		| Ruby		| Smart Proxy extension for Foreman creating and deleting hosts and services in Icinga 2
